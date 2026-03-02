@@ -1,0 +1,93 @@
+services:
+
+  # ─────────────────────────────────────────
+  # 1. MinIO — object store for raw documents
+  # ─────────────────────────────────────────
+  minio:
+    image: minio/minio:latest
+    container_name: rag_minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────
+  # 2. ChromaDB — vector store for chunks
+  # ─────────────────────────────────────────
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: rag_chromadb
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────
+  # 3. LLM — llama.cpp server
+  # ─────────────────────────────────────────
+  llm:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    container_name: rag_llm
+    command: >
+      -m /models/${MODEL_FILENAME}
+      --host 0.0.0.0
+      --port 8080
+      --ctx-size 4096
+      --n-predict 512
+      --threads 4
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./models:/models:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  # ─────────────────────────────────────────
+  # 4. Flask API
+  # ─────────────────────────────────────────
+  api:
+    build: ./api
+    container_name: rag_api
+    ports:
+      - "5000:5000"
+    environment:
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: ${MINIO_BUCKET}
+      CHROMA_HOST: chromadb
+      CHROMA_PORT: 8000
+      LLM_HOST: llm
+      LLM_PORT: 8080
+    depends_on:
+      minio:
+        condition: service_healthy
+      chromadb:
+        condition: service_healthy
+      llm:
+        condition: service_healthy
+    volumes:
+      - ./api:/app
+
+volumes:
+  minio_data:
+  chroma_data:

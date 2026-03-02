@@ -1,0 +1,15 @@
+# Model weights — NEVER commit these (4-8 GB)
+models/
+
+# Environment secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+*.egg-info/
+
+# OS
+.DS_Store
