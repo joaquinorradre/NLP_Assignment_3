@@ -133,3 +133,55 @@ def upload_document():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@documents_bp.route("/documents", methods=["GET"])
+def list_documents():
+    """Devuelve una lista con todos los documentos subidos."""
+    try:
+        client = get_minio_client()
+        bucket_name = current_app.config["MINIO_BUCKET"]
+        
+        # Comprobar si el bucket existe, si no, devolvemos lista vacía
+        try:
+            client.head_bucket(Bucket=bucket_name)
+        except Exception:
+            return jsonify([]), 200
+
+        response = client.list_objects_v2(Bucket=bucket_name)
+        docs = []
+        if "Contents" in response:
+            for obj in response["Contents"]:
+                # El nombre en MinIO lo guardamos como "uuid_nombredelarchivo.pdf"
+                key = obj["Key"]
+                parts = key.split("_", 1)
+                if len(parts) == 2:
+                    docs.append({
+                        "id": parts[0],
+                        "filename": parts[1],
+                        "upload_date": obj["LastModified"].isoformat()
+                    })
+        return jsonify(docs), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@documents_bp.route("/documents/<doc_id>", methods=["DELETE"])
+def delete_document(doc_id):
+    """Borra un documento de MinIO y sus chunks de ChromaDB."""
+    try:
+        # 1. Borrar los chunks de ChromaDB
+        collection = get_chroma_collection()
+        collection.delete(where={"doc_id": doc_id})
+        
+        # 2. Borrar el archivo original de MinIO
+        client = get_minio_client()
+        bucket_name = current_app.config["MINIO_BUCKET"]
+        
+        # Como no sabemos el nombre exacto del archivo, buscamos por el ID (que es el prefijo)
+        response = client.list_objects_v2(Bucket=bucket_name, Prefix=f"{doc_id}_")
+        if "Contents" in response:
+            for obj in response["Contents"]:
+                client.delete_object(Bucket=bucket_name, Key=obj["Key"])
+                
+        return jsonify({"message": f"Documento {doc_id} y sus chunks eliminados con éxito"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
