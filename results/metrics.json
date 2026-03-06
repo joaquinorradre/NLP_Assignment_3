@@ -1,0 +1,8 @@
+{
+    "hit_rate_k1": 0.6,
+    "mrr_k1": 0.6,
+    "hit_rate_k3": 0.8,
+    "mrr_k3": 0.7,
+    "hit_rate_k5": 0.8,
+    "mrr_k5": 0.7
+}
