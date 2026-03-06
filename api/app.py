@@ -2,6 +2,8 @@ from flask import Flask
 from config import Config
 from routes.health import health_bp
 from routes.documents import documents_bp
+from routes.query import query_bp
+
 
 def create_app():
     app = Flask(__name__)
@@ -9,10 +11,8 @@ def create_app():
 
     # Register blueprints
     app.register_blueprint(health_bp)
-    # Stage 2 — uncomment as you build them:
     app.register_blueprint(documents_bp)
-    # from routes.query import query_bp
-    # app.register_blueprint(query_bp)
+    app.register_blueprint(query_bp)
 
     return app
 

@@ -68,21 +68,23 @@ def query_system():
             })
 
         # 4. Construir el Prompt separando System y User
-        system_prompt = f"""You are a precise and helpful assistant. 
-Your task is to answer the user's question using ONLY the information in the context provided below.
-If the context does not contain the exact answer, simply output: "I don't know". Do not invent anything.
+        # 4. Construir el Prompt (Optimizado para Llama 3 1B)
+        system_prompt = "You are a helpful assistant. Answer the question concisely using ONLY the provided context."
+        
+        user_message = f"""Here is the context information:
+---------------------
+{context_text}
+---------------------
+Based on the context above, answer this question: {user_query}"""
 
-Context Information:
-{context_text}"""
-
-        # 5. Llamar al servidor local de llama.cpp usando el formato Chat correcto
+        # 5. Llamar al servidor local de llama.cpp
         llm_url = f"{current_app.config['LLM_URL']}/v1/chat/completions"
         payload = {
             "messages": [
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_query}
+                {"role": "user", "content": user_message}
             ],
-            "temperature": 0.0, # Temperatura a 0 para máxima precisión y cero creatividad
+            "temperature": 0.1, # Le damos un pelín de margen (0.1) para que no se bloquee
             "max_tokens": 150
         }
 
