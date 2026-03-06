@@ -1,0 +1,27 @@
+[
+  {
+    "question": "What is the weight of assignment 2?",
+    "expected_text": "2.5% of Final Grade",
+    "page": 1
+  },
+  {
+    "question": "Which neural architectures are mandatory?",
+    "expected_text": "recurrent model (RNN or LSTM) and a Transformer model",
+    "page": 10
+  },
+  {
+    "question": "What is the recommended approach for small datasets?",
+    "expected_text": "Fine-tune Pre-trained Model",
+    "page": 15
+  },
+  {
+    "question": "What is the maximum page limit for the report?",
+    "expected_text": "Max 4 Pages",
+    "page": 26
+  },
+  {
+    "question": "What metrics are used for Question Answering?",
+    "expected_text": "Exact Match (EM), F1",
+    "page": 9
+  }
+]
