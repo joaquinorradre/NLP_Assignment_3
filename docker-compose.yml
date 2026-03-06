@@ -24,18 +24,16 @@ services:
   # ─────────────────────────────────────────
   # 2. ChromaDB — vector store for chunks
   # ─────────────────────────────────────────
+  # ─────────────────────────────────────────
+  # 2. ChromaDB — vector store for chunks
+  # ─────────────────────────────────────────
   chromadb:
-    image: chromadb/chroma:latest
+    image: chromadb/chroma:0.5.3
     container_name: rag_chromadb
     ports:
       - "8000:8000"
     volumes:
       - chroma_data:/chroma/chroma
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   # ─────────────────────────────────────────
   # 3. LLM — llama.cpp server
@@ -82,7 +80,7 @@ services:
       minio:
         condition: service_healthy
       chromadb:
-        condition: service_healthy
+        condition: service_started
       llm:
         condition: service_healthy
     volumes:
