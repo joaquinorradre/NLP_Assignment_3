@@ -3,7 +3,6 @@ import json
 import os
 
 def run_evaluation():
-    # Cargar preguntas
     with open("eval_dataset.json", "r") as f:
         dataset = json.load(f)
 
@@ -14,11 +13,9 @@ def run_evaluation():
     print(f"Iniciando evaluación sobre {total} preguntas...\n")
 
     for item in dataset:
-        # 1. Consultar tu API local
         response = requests.post("http://localhost:5000/query", json={"query": item['question']})
         results = response.json().get("sources", [])
 
-        # 2. Calcular métricas para cada K
         for k in k_values:
             top_k = results[:k]
             hit_rank = 0
@@ -31,7 +28,6 @@ def run_evaluation():
                 metrics[k]["hits"] += 1
                 metrics[k]["mrr_sum"] += (1.0 / hit_rank)
 
-    # 3. Mostrar y guardar resultados
     final_results = {}
     print("--- RESULTADOS FINALES ---")
     for k in k_values:
@@ -41,7 +37,6 @@ def run_evaluation():
         final_results[f"mrr_k{k}"] = mrr
         print(f"K={k} | Hit Rate: {hr:.2f} | MRR: {mrr:.2f}")
 
-    # Guardar en la carpeta results como pide la tarea
     os.makedirs("results", exist_ok=True)
     with open("results/metrics.json", "w") as f:
         json.dump(final_results, f, indent=4)

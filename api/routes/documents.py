@@ -10,8 +10,6 @@ from sentence_transformers import SentenceTransformer
 
 documents_bp = Blueprint("documents", __name__)
 
-# Cargamos el modelo de embeddings en memoria al iniciar la API.
-# Este modelo (all-MiniLM-L6-v2) es muy ligero y rápido, ideal para CPU.
 embedder = SentenceTransformer('all-MiniLM-L6-v2')
 
 def get_minio_client():
@@ -28,7 +26,6 @@ def get_chroma_collection():
         host=current_app.config["CHROMA_HOST"],
         port=current_app.config["CHROMA_PORT"]
     )
-    # Usamos la distancia del coseno, que es la recomendada para sentence-transformers
     return chroma_client.get_or_create_collection(
         name="rag_documents", 
         metadata={"hnsw:space": "cosine"}
@@ -82,7 +79,6 @@ def upload_document():
     bucket_name = current_app.config["MINIO_BUCKET"]
     
     try:
-        # 1. Guardar archivo original en MinIO
         client = get_minio_client()
         try:
             client.head_bucket(Bucket=bucket_name)
@@ -95,7 +91,6 @@ def upload_document():
             Bucket=bucket_name, Key=object_name, Body=file.read(), ContentType=content_type
         )
         
-        # 2. Extracción de texto
         file.seek(0)
         if ext == "pdf":
             extracted_text = extract_text_from_pdf(file)
@@ -106,16 +101,13 @@ def upload_document():
             client.delete_object(Bucket=bucket_name, Key=object_name)
             return jsonify({"error": "El documento no contiene texto extraíble."}), 400
         
-        # 3. Chunking (Dividir en trozos manejables)
         chunks = chunk_text(extracted_text, chunk_size=200, overlap=50)
         
-        # 4. Generar Embeddings y guardar en ChromaDB
         collection = get_chroma_collection()
         
-        # Preparamos las listas que necesita ChromaDB
         chunk_ids = [f"{doc_id}_chunk_{i}" for i in range(len(chunks))]
         metadatas = [{"doc_id": doc_id, "filename": filename} for _ in range(len(chunks))]
-        embeddings = embedder.encode(chunks).tolist() # Convertimos a lista normal de Python
+        embeddings = embedder.encode(chunks).tolist()
         
         collection.add(
             ids=chunk_ids,
@@ -141,7 +133,6 @@ def list_documents():
         client = get_minio_client()
         bucket_name = current_app.config["MINIO_BUCKET"]
         
-        # Comprobar si el bucket existe, si no, devolvemos lista vacía
         try:
             client.head_bucket(Bucket=bucket_name)
         except Exception:
@@ -151,7 +142,6 @@ def list_documents():
         docs = []
         if "Contents" in response:
             for obj in response["Contents"]:
-                # El nombre en MinIO lo guardamos como "uuid_nombredelarchivo.pdf"
                 key = obj["Key"]
                 parts = key.split("_", 1)
                 if len(parts) == 2:
@@ -168,15 +158,12 @@ def list_documents():
 def delete_document(doc_id):
     """Borra un documento de MinIO y sus chunks de ChromaDB."""
     try:
-        # 1. Borrar los chunks de ChromaDB
         collection = get_chroma_collection()
         collection.delete(where={"doc_id": doc_id})
         
-        # 2. Borrar el archivo original de MinIO
         client = get_minio_client()
         bucket_name = current_app.config["MINIO_BUCKET"]
         
-        # Como no sabemos el nombre exacto del archivo, buscamos por el ID (que es el prefijo)
         response = client.list_objects_v2(Bucket=bucket_name, Prefix=f"{doc_id}_")
         if "Contents" in response:
             for obj in response["Contents"]:

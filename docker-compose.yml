@@ -1,8 +1,6 @@
 services:
 
-  # ─────────────────────────────────────────
   # 1. MinIO — object store for raw documents
-  # ─────────────────────────────────────────
   minio:
     image: minio/minio:latest
     container_name: rag_minio
@@ -21,12 +19,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # ─────────────────────────────────────────
   # 2. ChromaDB — vector store for chunks
-  # ─────────────────────────────────────────
-  # ─────────────────────────────────────────
-  # 2. ChromaDB — vector store for chunks
-  # ─────────────────────────────────────────
   chromadb:
     image: chromadb/chroma:0.5.3
     container_name: rag_chromadb
@@ -35,9 +28,7 @@ services:
     volumes:
       - chroma_data:/chroma/chroma
 
-  # ─────────────────────────────────────────
   # 3. LLM — llama.cpp server
-  # ─────────────────────────────────────────
   llm:
     image: ghcr.io/ggml-org/llama.cpp:server
     container_name: rag_llm
@@ -59,9 +50,7 @@ services:
       retries: 10
       start_period: 30s
 
-  # ─────────────────────────────────────────
   # 4. Flask API
-  # ─────────────────────────────────────────
   api:
     build: ./api
     container_name: rag_api
@@ -85,6 +74,17 @@ services:
         condition: service_healthy
     volumes:
       - ./api:/app
+
+  # 5. Gradio UI (Bonus Extension)
+  gradio_ui:
+    build: ./ui
+    container_name: rag_ui
+    ports:
+      - "7860:7860"
+    environment:
+      API_URL: http://api:5000
+    depends_on:
+      - api
 
 volumes:
   minio_data:
