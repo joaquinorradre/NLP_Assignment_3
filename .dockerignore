@@ -1,0 +1,12 @@
+# Ignorar el entorno virtual local
+.venv/
+venv/
+env/
+bin/
+
+# Otros archivos innecesarios
+__pycache__/
+*.pyc
+.git
+.gitignore
+.env

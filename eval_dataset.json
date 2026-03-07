@@ -1,27 +1,52 @@
 [
   {
-    "question": "What is the weight of assignment 2?",
-    "expected_text": "2.5% of Final Grade",
-    "page": 1
+    "question": "What is a feature in classical computer vision?",
+    "expected_text": "Compact, informative representation of an image",
+    "page": 3
   },
   {
-    "question": "Which neural architectures are mandatory?",
-    "expected_text": "recurrent model (RNN or LSTM) and a Transformer model",
-    "page": 10
+    "question": "What is the motivation behind Histogram of Oriented Gradients (HoG)?",
+    "expected_text": "robust detection of shapes and objects",
+    "page": 6
   },
   {
-    "question": "What is the recommended approach for small datasets?",
-    "expected_text": "Fine-tune Pre-trained Model",
-    "page": 15
+    "question": "What is used to find extrema in scale space in the SIFT pipeline?",
+    "expected_text": "Difference of Gaussians",
+    "page": 14
   },
   {
-    "question": "What is the maximum page limit for the report?",
-    "expected_text": "Max 4 Pages",
-    "page": 26
+    "question": "How many dimensions does a keypoint descriptor have in SIFT?",
+    "expected_text": "128-dimensional vector",
+    "page": 18
   },
   {
-    "question": "What metrics are used for Question Answering?",
-    "expected_text": "Exact Match (EM), F1",
+    "question": "What is Transfer Learning?",
+    "expected_text": "Using a pretrained neural network as a starting point",
+    "page": 3
+  },
+  {
+    "question": "What do early layers in pretrained networks usually capture?",
+    "expected_text": "edges, textures, colors",
+    "page": 4
+  },
+  {
+    "question": "What approach is recommended if you have a small dataset that is similar to the source dataset?",
+    "expected_text": "Pretrained network as a feature extractor",
     "page": 9
+  },
+  {
+    "question": "What do intermediate layers detect according to feature visualization?",
+    "expected_text": "shapes, object parts",
+    "page": 3
+  },
+  {
+    "question": "What is a known limitation of Saliency Maps?",
+    "expected_text": "Often noisy; lacks spatial coherence",
+    "page": 17
+  },
+  {
+    "question": "What problem does Integrated Gradients reduce compared to saliency maps?",
+    "expected_text": "Reduces saturation and noise problems",
+    "page": 10
   }
 ]

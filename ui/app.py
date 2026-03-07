@@ -34,9 +34,15 @@ def upload_and_refresh(file):
     try:
         with open(file.name, "rb") as f:
             files = {"file": (os.path.basename(file.name), f)}
-            requests.post(f"{API_URL}/documents", files=files)
+            response = requests.post(f"{API_URL}/documents", files=files)
         table, choices = get_documents_data()
-        return "File indexed!", table, gr.update(choices=choices)
+
+        if response.status_code == 201:
+            return "✅ File indexed!", table, gr.update(choices=choices)
+        else:
+            # Si falla, mostramos el error que envía el API
+            error_msg = response.json().get('error', 'Unknown error')
+            return f"❌ Upload failed: {error_msg}", table, gr.update(choices=choices)
     except:
         table, choices = get_documents_data()
         return "Upload failed.", table, gr.update(choices=choices)
@@ -56,7 +62,16 @@ def delete_and_refresh(doc_id):
 def chat_fn(message, history):
     try:
         response = requests.post(f"{API_URL}/query", json={"query": message})
-        return response.json().get("answer", "No answer found.")
+        data = response.json()
+        answer = data.get("answer", "No answer found.")
+        sources = data.get("sources", [])
+        
+        if sources:
+            answer += "\n\n**Source document used:**\n"
+            for s in sources:
+                answer += f"- {s['filename']} (Relevancia: {s['relevance_score']})\n"
+                
+        return answer
     except:
         return "API Error."
 

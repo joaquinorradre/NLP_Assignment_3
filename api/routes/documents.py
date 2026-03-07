@@ -152,6 +152,7 @@ def list_documents():
                     })
         return jsonify(docs), 200
     except Exception as e:
+        print(f"FATAL ERROR WHEN UPLOADING: {e}")
         return jsonify({"error": str(e)}), 500
 
 @documents_bp.route("/documents/<doc_id>", methods=["DELETE"])

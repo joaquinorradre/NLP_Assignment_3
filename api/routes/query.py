@@ -63,10 +63,10 @@ def query_system():
         system_prompt = "You are a helpful assistant. Answer the question concisely using ONLY the provided context."
         
         user_message = f"""Here is the context information:
----------------------
-{context_text}
----------------------
-Based on the context above, answer this question: {user_query}"""
+            ---------------------
+            {context_text}
+            ---------------------
+            Based on the context above, answer this question: {user_query}"""
 
         llm_url = f"{current_app.config['LLM_URL']}/v1/chat/completions"
         payload = {
