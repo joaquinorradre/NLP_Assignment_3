@@ -1,0 +1,72 @@
+[
+    {
+        "question": "What is a feature in classical computer vision?",
+        "expected_text": "Compact, informative representation of an image",
+        "llm_answer": "In classical computer vision, a feature is a compact, informative representation of an image that captures its structure and invariance. This is typically achieved by extracting a vector representation of the image, such as the histogram of oriented gradients (HoG) or the color histogram, which can be used as input to machine learning models.",
+        "top_retrieved_chunk": "Computer Vision T1 Classical Computer Vision Classical Computer Vision  Introduction  Early computer vision needed handcrafted feature engineering  Deep learning later automated this process  Image features and descriptors  Classical feature extraction techniques (HoG, SIFT)  Feature-based pip...",
+        "result_k3": "HIT"
+    },
+    {
+        "question": "What is the motivation behind Histogram of Oriented Gradients (HoG)?",
+        "expected_text": "robust detection of shapes and objects",
+        "llm_answer": "The motivation behind Histogram of Oriented Gradients (HoG) is to detect and describe local features invariant to scale and rotation, which is a key idea in Computer Vision. Specifically, HoG is designed to capture the local distribution of gradient orientations, which helps to robustly detect shapes and objects, especially people, in various lighting conditions and backgrounds.",
+        "top_retrieved_chunk": "of Oriented Gradients (HoG)  Pipeline: 1. Divide image into cells (e.g., 8×8 pixels). Computer Vision| University Master’s degree in Machine Learning 9 Classical Computer Vision  Histogram of Oriented Gradients (HoG)  Pipeline: 1. Create histograms of gradient orientations for each cell. Computer...",
+        "result_k3": "HIT"
+    },
+    {
+        "question": "What is used to find extrema in scale space in the SIFT pipeline?",
+        "expected_text": "Difference of Gaussians",
+        "llm_answer": "In the SIFT pipeline, extrema in scale space are found using the Difference of Gaussians (DoG) algorithm.",
+        "top_retrieved_chunk": "features invariant to scale and rotation.  Pipeline: 1. Keypoint detection: find extrema in scale space (using Difference of Gaussians). 2. Keypoint localization: discard low-contrast or edge responses. 3. Orientation assignment: compute dominant gradient direction per keypoint. 4. Descriptor compu...",
+        "result_k3": "HIT"
+    },
+    {
+        "question": "How many dimensions does a keypoint descriptor have in SIFT?",
+        "expected_text": "128-dimensional vector",
+        "llm_answer": "The keypoint descriptor in SIFT has 128 dimensions.",
+        "top_retrieved_chunk": "features invariant to scale and rotation.  Pipeline: 1. Keypoint detection: find extrema in scale space (using Difference of Gaussians). 2. Keypoint localization: discard low-contrast or edge responses. 3. Orientation assignment: compute dominant gradient direction per keypoint. 4. Descriptor compu...",
+        "result_k3": "MISS"
+    },
+    {
+        "question": "What is Transfer Learning?",
+        "expected_text": "Using a pretrained neural network as a starting point",
+        "llm_answer": "Based on the context provided, Transfer Learning is a machine learning technique that involves using a pre-trained neural network as a starting point for a new task or domain. The pre-trained network has already learned generic features that can be applied to the new task, and the goal is to fine-tune or adapt the network to achieve better performance on the specific task.",
+        "top_retrieved_chunk": "Learning 3 Transfer Learning  Why Transfer Learning works?  Pretrained networks already learn generic features:  Early layers: edges, textures, colors  Mid layers: shapes, patterns  Later layers: task-specific features  You only need to fine-tune or adapt for your problem Computer Vision| Univ...",
+        "result_k3": "HIT"
+    },
+    {
+        "question": "What do early layers in pretrained networks usually capture?",
+        "expected_text": "edges, textures, colors",
+        "llm_answer": "Early layers in pretrained networks usually capture generic features such as edges, textures, colors, shapes, and patterns.",
+        "top_retrieved_chunk": "Learning 3 Transfer Learning  Why Transfer Learning works?  Pretrained networks already learn generic features:  Early layers: edges, textures, colors  Mid layers: shapes, patterns  Later layers: task-specific features  You only need to fine-tune or adapt for your problem Computer Vision| Univ...",
+        "result_k3": "HIT"
+    },
+    {
+        "question": "What approach is recommended if you have a small dataset that is similar to the source dataset?",
+        "expected_text": "Pretrained network as a feature extractor",
+        "llm_answer": "Based on the context, if you have a small dataset that is similar to the source dataset, the recommended approach for Transfer Learning is to use the \"Grad-CAM\" (Gradient-weighted Class Activation Mapping) feature attribution method.\n\nGrad-CAM is a popular feature attribution method that works well when the target dataset is similar to the source dataset. It uses gradients of the target class with respect to a convolutional layer to weight activation maps, producing a heatmap over the original image that can be easily interpreted. This approach is particularly effective when the feature extraction process is similar between the two datasets, as it can leverage the existing knowledge and features learned by the pre-trained model.",
+        "top_retrieved_chunk": "Computer Vision T2 Learning CNNs Transfer Learning  Training a CNN from scratch requires:  Huge labeled datasets  Weeks or months of training  Powerful GPUs  Not always feasible for specific tasks  Example: Suppose you want to build a CNN to detect rare diseases in X-ray images  To train from...",
+        "result_k3": "MISS"
+    },
+    {
+        "question": "What do intermediate layers detect according to feature visualization?",
+        "expected_text": "shapes, object parts",
+        "llm_answer": "According to the context, intermediate layers in a Convolutional Neural Network (CNN) detect more complex patterns, such as shapes, object parts, and semantic concepts, in the input image.",
+        "top_retrieved_chunk": "Computer Vision T4 Explainable AI Explainable AI ▪ Introduction ▪ CNNs are powerful but opaque → “black boxes” ▪ Why it matters: ▪ Trust: Ensure the model is making correct decisions. ▪ Bias detection: Avoid learning spurious correlations. ▪ Regulation: Comply with rules requiring interpretability (...",
+        "result_k3": "HIT"
+    },
+    {
+        "question": "What is a known limitation of Saliency Maps?",
+        "expected_text": "Often noisy; lacks spatial coherence",
+        "llm_answer": "A known limitation of Saliency Maps is that they can be noisy and may highlight irrelevant features, especially in high-dimensional inputs.",
+        "top_retrieved_chunk": "Master’s degree in Machine Learning 7 Explainable AI ▪ Feature attribution methods ▪ Saliency maps (Simonyan et al., 2014) ▪ Gradient of the class w.r.t. the input → highlights relevant pixels. Computer Vision| University Master’s degree in Machine Learning 8 Explainable AI ▪ Feature attribution met...",
+        "result_k3": "MISS"
+    },
+    {
+        "question": "What problem does Integrated Gradients reduce compared to saliency maps?",
+        "expected_text": "Reduces saturation and noise problems",
+        "llm_answer": "Integrated Gradients reduces the problem of saturation and noise in saliency maps compared to saliency maps. Saliency maps can be noisy and highlight irrelevant features, especially in high-dimensional inputs. Integrated Gradients, on the other hand, computes the accumulated gradients of the model's output with respect to the input features as the input transitions from a baseline to the actual input, which reduces these issues.",
+        "top_retrieved_chunk": "Master’s degree in Machine Learning 7 Explainable AI ▪ Feature attribution methods ▪ Saliency maps (Simonyan et al., 2014) ▪ Gradient of the class w.r.t. the input → highlights relevant pixels. Computer Vision| University Master’s degree in Machine Learning 8 Explainable AI ▪ Feature attribution met...",
+        "result_k3": "HIT"
+    }
+]

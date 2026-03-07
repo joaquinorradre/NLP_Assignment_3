@@ -9,12 +9,23 @@ def run_evaluation():
     k_values = [1, 3, 5]
     metrics = {k: {"hits": 0, "mrr_sum": 0} for k in k_values}
     total = len(dataset)
+    
+    # Lista para almacenar datos del análisis cualitativo
+    qualitative_logs = []
 
     print(f"Iniciando evaluación sobre {total} preguntas...\n")
 
     for item in dataset:
+        # Llamada al API
         response = requests.post("http://localhost:5000/query", json={"query": item['question']})
-        results = response.json().get("sources", [])
+        data = response.json()
+        
+        results = data.get("sources", [])
+        llm_answer = data.get("answer", "") # Capturamos la respuesta del modelo
+
+        # Lógica para análisis cualitativo (basada en K=3)
+        top_1_text = results[0]['chunk_text'] if results else "No results"
+        is_hit_k3 = False
 
         for k in k_values:
             top_k = results[:k]
@@ -22,25 +33,45 @@ def run_evaluation():
             for rank, res in enumerate(top_k, 1):
                 if item['expected_text'].lower() in res['chunk_text'].lower():
                     hit_rank = rank
+                    if k == 3: is_hit_k3 = True
                     break
             
             if hit_rank > 0:
                 metrics[k]["hits"] += 1
                 metrics[k]["mrr_sum"] += (1.0 / hit_rank)
 
-    final_results = {}
+        # Guardamos la información de esta pregunta para el análisis posterior
+        qualitative_logs.append({
+            "question": item['question'],
+            "expected_text": item['expected_text'],
+            "llm_answer": llm_answer,
+            "top_retrieved_chunk": top_1_text[:300] + "...", # Guardamos un extracto del fragmento
+            "result_k3": "HIT" if is_hit_k3 else "MISS"
+        })
+
+    # Cálculo y guardado de métricas (Cuantitativo)
+    final_metrics = {}
     print("--- RESULTADOS FINALES ---")
     for k in k_values:
         hr = metrics[k]["hits"] / total
         mrr = metrics[k]["mrr_sum"] / total
-        final_results[f"hit_rate_k{k}"] = hr
-        final_results[f"mrr_k{k}"] = mrr
+        final_metrics[f"hit_rate_k{k}"] = hr
+        final_metrics[f"mrr_k{k}"] = mrr
         print(f"K={k} | Hit Rate: {hr:.2f} | MRR: {mrr:.2f}")
 
     os.makedirs("results", exist_ok=True)
+    
+    # Guardar métricas numéricas
     with open("results/metrics.json", "w") as f:
-        json.dump(final_results, f, indent=4)
-    print("\nResultados guardados en results/metrics.json")
+        json.dump(final_metrics, f, indent=4)
+        
+    # Guardar datos para el informe (Análisis Cualitativo)
+    with open("results/qualitative_analysis.json", "w", encoding='utf-8') as f:
+        json.dump(qualitative_logs, f, indent=4, ensure_ascii=False)
+
+    print("\n✅ Evaluación completada.")
+    print("- Métricas guardadas en: results/metrics.json")
+    print("- Datos para análisis cualitativo en: results/qualitative_analysis.json")
 
 if __name__ == "__main__":
     run_evaluation()
